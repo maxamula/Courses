@@ -45,29 +45,50 @@ namespace Courses.Pages
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
+        protected RadzenScheduler<Appointment> scheduler;
+
+        protected RadzenDataList<Models.Database.Group> dataList;
+
         protected Student Self { get => (AuthenticationStateProvider as AuthStateProvider).Account.Student; }
 
         protected Appointment SelectedApointment { get; set; }
 
         protected IEnumerable<Appointment> StudentAppointments { get; set; }
 
-        protected IEnumerable<Models.Database.Group> StudentGroups { get; set; }
+        protected IQueryable<Models.Database.Group> Groups { get; set; }
 
         protected Course CourseOfTheDay { get; set; }
 
-        protected override async Task OnInitializedAsync()
+        protected List<string> studentGroups { get; set; } 
+
+        protected async void Reload()
         {
-            var studentGroups = DatabaseContext.Studentsgroups
+            studentGroups = DatabaseContext.Studentsgroups
             .Where(sg => sg.StudentID == Self.ID)
             .Select(sg => sg.GroupName)
             .ToList();
+            Groups = (await DatabaseService.GetGroups()).Where(x => !x.Course.Archived && !studentGroups.Contains(x.Name));
+            StudentAppointments = DatabaseContext.Appointments.Include(i => i.Lesson).Include(i => i.Group)
+            .Where(appointment => studentGroups.Contains(appointment.GroupName)).OrderBy(x => x.LessonStart).ToList();
+            await dataList.Reload();
+            await scheduler.Reload();
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            studentGroups = DatabaseContext.Studentsgroups
+            .Where(sg => sg.StudentID == Self.ID)
+            .Select(sg => sg.GroupName)
+            .ToList();
+            
+            Groups = (await DatabaseService.GetGroups()).Where(x => !x.Course.Archived && !studentGroups.Contains(x.Name));
 
             StudentAppointments = DatabaseContext.Appointments.Include(i => i.Lesson).Include(i => i.Group)
             .Where(appointment => studentGroups.Contains(appointment.GroupName)).OrderBy(x => x.LessonStart).ToList();
 
             Random random = new Random((int)DateTime.Now.Ticks);
 
-            CourseOfTheDay = DatabaseContext.Courses
+            CourseOfTheDay = DatabaseContext.Courses.Where(x => !x.Archived)
                 .Skip(random.Next(0, DatabaseContext.Courses.Count() - 1))
                 .FirstOrDefault();
         }
@@ -80,5 +101,33 @@ namespace Courses.Pages
         }
 
         async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args) => SelectedApointment = args.Data;
+
+        private string GetDays(int num)
+        {
+            string days = "";
+            var flags = (DaysOfWeek)num;
+            foreach (DaysOfWeek day in Enum.GetValues(typeof(DaysOfWeek)))
+            {
+                if (flags.HasFlag(day) && day != 0)
+                {
+                    days += day + ", ";
+                }
+            }
+            days = days.TrimEnd(',', ' ');
+            return days;
+        }
+
+        protected async Task EnrollButtonClick(MouseEventArgs args, Courses.Models.Database.Group group)
+        {
+            try
+            {
+                await DatabaseService.CreateStudentsgroup(new Studentsgroup(){ StudentID = Self.ID, GroupName = group.Name });
+                Reload();
+            }
+            catch(Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", ex.Message);
+            }
+        }
     }
 }

@@ -59,7 +59,7 @@ namespace Courses.Pages
         {
             try
             {
-                if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
+                if (await DialogService.Confirm("Are you sure you want to DELETE this record?") == true)
                 {
                     var deleteResult = await DatabaseService.DeleteCourse(course.ID);
 
@@ -77,6 +77,24 @@ namespace Courses.Pages
                     Summary = $"Error",
                     Detail = $"Unable to delete Course"
                 });
+            }
+        }
+
+        protected async Task GridArchiveButtonClick(MouseEventArgs args, Courses.Models.Database.Course course)
+        {
+            try
+            {
+                if (await DialogService.Confirm("Are you sure you want to ARCHIVE this record?") == true)
+                {
+                    course.Archived = true;
+                    var result = await DatabaseService.UpdateCourse(course.ID, course);
+                    if(result != null)
+                        await grid0.Reload();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", ex.Message);
             }
         }
 

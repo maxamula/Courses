@@ -62,7 +62,7 @@
 
     </RadzenColumn>
   </RadzenRow>
-    <RadzenScheduler TItem="Appointment" TextProperty="GroupName" StartProperty="LessonStart"  EndProperty="LessonEnd" Data="@appointments" Style="height: 50vh">
+    <RadzenScheduler TItem="Appointment" @ref=@scheduler TextProperty="GroupName" StartProperty="LessonStart" AppointmentSelect=@OnAppointmentSelect EndProperty="LessonEnd" Data="@appointments" Style="height: 50vh">
         <RadzenDayView></RadzenDayView>
         <RadzenWeekView></RadzenWeekView>
     </RadzenScheduler>

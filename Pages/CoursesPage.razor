@@ -51,6 +51,9 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
                     <Template Context="course">
+                            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="archive" Size="ButtonSize.Medium"
+                                          Shade="Shade.Lighter" Variant="Variant.Flat"
+                                          Click=@(args => GridArchiveButtonClick(args, course)) @onclick:stopPropagation="true" />
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
                             Shade="Shade.Lighter" Variant="Variant.Flat"
                             Click=@(args => GridDeleteButtonClick(args, course)) @onclick:stopPropagation="true" />
@@ -69,7 +72,7 @@
                                 </RadzenStack>
                             </RadzenColumn>
                         </RadzenRow>
-                        <RadzenDataGrid ColumnWidth="200px" Visible="@(course != null)" @ref=LessonsDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+                        <RadzenDataGrid ColumnWidth="200px" Visible="@(course != null)" @ref=LessonsDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
                           Data="@course?.Lessons" TItem="Courses.Models.Database.Lesson"  RowSelect="@(args => LessonsRowSelect(args, course))">
                           <Columns>
                             <RadzenDataGridColumn TItem="Courses.Models.Database.Lesson" Property="Sequence" Title="Sequence">

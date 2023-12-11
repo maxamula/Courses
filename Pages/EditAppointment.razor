@@ -1,21 +1,37 @@
-@page "/edit-appointment"
+@inject DialogService DialogService
+@using Models.Database
 
-<PageTitle>Edit Lesson</PageTitle>
+<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
+<div class="row" style="margin-bottom: 16px">
+    <div class="col-md-3">
+        <RadzenLabel Text="Start" />
+    </div>
+    <div class="col">
+        <RadzenDatePicker @bind-Value="@model.LessonStart" Name="Start" ShowTime="true" />
+        <RadzenRequiredValidator Text="Start is required" Component="Start" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col">
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+    </div>
+</div>
+</RadzenTemplateForm>
 
-    <RadzenColumn SizeMD=12>
-        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Appointment</RadzenAlert>
+@code {
+    [Parameter]
+    public Appointment Appointment { get; set; }
 
-        <RadzenTemplateForm TItem="Courses.Models.Database.Appointment" Data="@appointment" Visible="@(appointment != null)" Submit="@FormSubmit">
-          <RadzenStack>
-            <RadzenFormField Text="Start" Variant="Variant.Flat">
-                  <ChildContent>
-                      <RadzenDatePicker TValue="dynamic"></RadzenDatePicker>
-                  </ChildContent>    
-            </RadzenFormField>
-          </RadzenStack>
-          <RadzenStack style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
-                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
-          </RadzenStack>
-        </RadzenTemplateForm>
-    </RadzenColumn>
+    Appointment model = new Appointment();
+
+    protected override void OnParametersSet()
+    {
+        model = Appointment;
+    }
+
+    void OnSubmit(Appointment model)
+    {
+        DialogService.Close(model);
+    }
+}

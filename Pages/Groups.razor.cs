@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.InkML;
 using MySqlConnector;
 using Courses.Data;
 using Microsoft.EntityFrameworkCore;
+using Courses.Models.Database;
 
 namespace Courses.Pages
 {
@@ -40,6 +41,8 @@ namespace Courses.Pages
         [Inject]
         public DatabaseContext DatabaseContext { get; set; }
 
+        RadzenScheduler<Appointment> scheduler;
+
         protected IEnumerable<Courses.Models.Database.Group> groups;
 
         protected IEnumerable<Courses.Models.Database.Appointment> appointments;
@@ -57,12 +60,12 @@ namespace Courses.Pages
             groups = await DatabaseService.GetGroups(new Query { Filter = $@"i => i.Name.Contains(@0)", FilterParameters = new object[] { search }, Expand = "Course" });
         }
 
-            protected IEnumerable<Courses.Models.Database.Course> coursesForCourseID;
+        protected IEnumerable<Courses.Models.Database.Course> coursesForCourseID;
         protected override async Task OnInitializedAsync()
         {
             groups = await DatabaseService.GetGroups(new Query { Filter = $@"i => i.Name.Contains(@0)", FilterParameters = new object[] { search }, Expand = "Course" });
             appointments = await DatabaseService.GetAppointments();
-            coursesForCourseID = await DatabaseService.GetCourses();
+            coursesForCourseID = (await DatabaseService.GetCourses()).Where(x => !x.Archived);
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
@@ -81,6 +84,8 @@ namespace Courses.Pages
                     if (deleteResult != null)
                     {
                         await grid0.Reload();
+                        appointments = await DatabaseService.GetAppointments();
+                        await scheduler.Reload();
                     }
                 }
             }
@@ -114,6 +119,8 @@ namespace Courses.Pages
         protected async Task SaveButtonClick(MouseEventArgs args, Courses.Models.Database.Group data)
         {
             await grid0.UpdateRow(data);
+            appointments = await DatabaseService.GetAppointments();
+            await scheduler.Reload();
         }
 
         protected async Task CancelButtonClick(MouseEventArgs args, Courses.Models.Database.Group data)
@@ -126,12 +133,24 @@ namespace Courses.Pages
         {
             try
             {
-                DatabaseContext.Database.ExecuteSqlRaw("CALL ArrangeAppointments({0}, {1}, {2})", "DataScience_Group1", "2023-12-12", "14:00:00");
+                string date = await JSRuntime.InvokeAsync<string>("prompt", "Enter starting date:");
+                string time = await JSRuntime.InvokeAsync<string>("prompt", "Enter time:");
+                DatabaseContext.Database.ExecuteSqlRaw("CALL ArrangeAppointments({0}, {1}, {2})", data.Name, date, time);
+                appointments = await DatabaseService.GetAppointments();
+                await scheduler.Reload();
             }
             catch (Exception ex) 
             {
                 await JSRuntime.InvokeVoidAsync("alert", ex.Message);
             }
+        }
+
+        async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
+        {        
+            Appointment data = await DialogService.OpenAsync<EditAppointment>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
+            await DatabaseContext.SaveChangesAsync();
+            DatabaseContext.Entry(data).Reload();
+            await scheduler.Reload();
         }
     }
 }

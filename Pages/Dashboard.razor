@@ -1,97 +1,20 @@
 @using Models.Database  
 @using System.Globalization
 
+<style>
+  .product-title {
+      min-height: 72px;
+      background-color: var(--rz-secondary-lighter);
+  }
+  .price-badge {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 20px;
+      padding: 8px;
+  }
+</style>
+
   <div class="container-fluid py-4">
-    <div class="row">
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Your Balance</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    $53,000
-                    <span class="text-success text-sm font-weight-bolder"></span>
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Users</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    2,300
-                    <span class="text-success text-sm font-weight-bolder">+3%</span>
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">New Clients</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    +3,462
-                    <span class="text-danger text-sm font-weight-bolder">-2%</span>
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-sm-6">
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    $103,430
-                    <span class="text-success text-sm font-weight-bolder">+5%</span>
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="row mt-4">
       <div class="col-lg-7 mb-lg-0 mb-4">
         <div class="card">
@@ -110,7 +33,12 @@
               </div>
               <div class="col-lg-5 ms-auto text-center mt-5 mt-lg-0">
                 <div class="bg-gradient-primary border-radius-lg h-100" style="overflow: hidden;">
-                    <img style="width: 100%; height: 100%; " src="data:image/png;base64,@Convert.ToBase64String(CourseOfTheDay.Picture)" alt="rocket">
+                  @{
+                    if(CourseOfTheDay.Picture != null)
+                    {
+                      <img style="width: 100%; height: 100%; " src="data:image/png;base64,@Convert.ToBase64String(CourseOfTheDay.Picture)" alt="pic">
+                    }
+                  }
                 </div>
               </div>
             </div>
@@ -150,16 +78,36 @@
       <div class="col-lg-7">
         <div class="card z-index-2">
           <div class="card-header pb-0">
-            <h6>Sales overview</h6>
-            <p class="text-sm">
-              <i class="fa fa-arrow-up text-success"></i>
-              <span class="font-weight-bold">4% more</span> in 2021
-            </p>
+            <h6>Courses overview</h6>
           </div>
           <div class="card-body p-3">
             <div class="chart">
-              <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
             </div>
+                    <RadzenDataList @ref=@dataList TItem="Models.Database.Group" Data=@Groups AllowPaging="true" PageSize="3">
+                        <Template Context="group">
+                            <RadzenCard Style="width: 100%; padding: 0;">
+                              <RadzenRow Gap="0">
+                                  <RadzenColumn Size="12" SizeLG="3" Class="rz-p-4 product-title">
+                                      <RadzenLink Path=@($"about/{group.Course.ID}") TextStyle="TextStyle.H6" TagName="TagName.H5"  class="rz-color-secondary">@(group.Course.Name)</RadzenLink>
+                                  </RadzenColumn>
+                                  <RadzenColumn Size="12" SizeLG="7" Class="rz-p-4">
+                                      <RadzenRow Gap="0">
+                                          <RadzenColumn Size="12" SizeMD="6" SizeLG="9">
+                                              <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Class="rz-mb-0">@group.Course.CourseType</RadzenText>
+                                              <RadzenText TextStyle="TextStyle.Body2">@GetDays(group.Course.DaysOfWeek)</RadzenText>
+                                          </RadzenColumn>
+                                          <RadzenColumn Size="12" SizeMD="6" SizeLG="1" Class="rz-text-align-start rz-text-align-lg-end">
+                                              <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Shade="Shade.Lighter" class="price-badge" Text=@($"{group.Course.PaymentPerHour}₴") />
+                                          </RadzenColumn>
+                                      </RadzenRow>
+                                  </RadzenColumn>
+                                  <RadzenColumn Size="5" SizeLG="2" Class="rz-p-4">
+                                      <RadzenButton Text="Enroll" Style="width: 100%" Click=@(args => EnrollButtonClick(args, group)) @onclick:stopPropagation="true" />
+                                  </RadzenColumn>
+                              </RadzenRow>
+                          </RadzenCard>
+                        </Template>
+                    </RadzenDataList>
           </div>
         </div>
       </div>
@@ -181,17 +129,12 @@
                   <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-ellipsis-v text-secondary"></i>
                   </a>
-                  <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
-                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
-                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
-                  </ul>
                 </div>
               </div>
             </div>
           </div>
           <div class="card-body px-0 pb-2">
-                    <RadzenScheduler TItem="Appointment" Data="@StudentAppointments" TextProperty="GroupName" StartProperty="LessonStart" EndProperty="LessonEnd" AppointmentSelect=@OnAppointmentSelect Style="height: 60vh; margin-left: 5px; margin-right: 5px; border-radius: 16px">
+              <RadzenScheduler TItem="Appointment" @ref=scheduler Data="@StudentAppointments" TextProperty="GroupName" StartProperty="LessonStart" EndProperty="LessonEnd" AppointmentSelect=@OnAppointmentSelect Style="height: 60vh; margin-left: 5px; margin-right: 5px; border-radius: 16px">
                   <RadzenDayView></RadzenDayView>
                   <RadzenWeekView></RadzenWeekView>
                   <RadzenMonthView></RadzenMonthView>
@@ -205,8 +148,7 @@
             <h6>Progression overview</h6>
             <p class="text-sm">
               <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
-              <span class="font-weight-bold">24%</span> this month
-            </p>
+              <span class="font-weight-bold">24%</span>&nbsp;completed</p>
           </div>
           <div class="card-body p-3">
               <RadzenTimeline>

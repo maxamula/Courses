@@ -45,11 +45,12 @@ namespace Courses.Pages
 
             await grid0.GoToPage(0);
 
-            teachers = await DatabaseService.GetTeachers(new Query { Filter = $@"i => i.FullName.Contains(@0) || i.Email.Contains(@0) || i.Phone.Contains(@0)", FilterParameters = new object[] { search } });
+            teachers = await DatabaseService.GetTeachers(new Query { Filter = $@"i => (i.FullName.Contains(@0) || i.Email.Contains(@0) || i.Phone.Contains(@0)) && !i.Archived", FilterParameters = new object[] { search } });
         }
+        
         protected override async Task OnInitializedAsync()
         {
-            teachers = await DatabaseService.GetTeachers(new Query { Filter = $@"i => i.FullName.Contains(@0) || i.Email.Contains(@0) || i.Phone.Contains(@0)", FilterParameters = new object[] { search } });
+            teachers = await DatabaseService.GetTeachers(new Query { Filter = $@"i => !i.Archived", FilterParameters = new object[] { search } });
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
@@ -96,6 +97,24 @@ namespace Courses.Pages
         protected async Task EditButtonClick(MouseEventArgs args, Courses.Models.Database.Teacher data)
         {
             await grid0.EditRow(data);
+        }
+
+        protected async Task GridArchiveButtonClick(MouseEventArgs args, Courses.Models.Database.Teacher data)
+        {
+            try
+            {
+                if (await DialogService.Confirm("Are you sure you want to ARCHIVE this record?") == true)
+                {
+                    data.Archived = true;
+                    var result = await DatabaseService.UpdateTeacher(data.ID, data);
+                    if(result != null)
+                        await grid0.Reload();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", ex.Message);
+            }
         }
 
         protected async Task SaveButtonClick(MouseEventArgs args, Courses.Models.Database.Teacher data)

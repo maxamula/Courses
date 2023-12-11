@@ -20,9 +20,6 @@ namespace Courses.Pages
         protected NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        protected DialogService DialogService { get; set; }
-
-        [Inject]
         protected TooltipService TooltipService { get; set; }
 
         [Inject]
@@ -35,26 +32,5 @@ namespace Courses.Pages
 
         [Inject]
         public DatabaseContext Context { get; set; }
-
-        [Parameter]
-        public int ID { get; set; }
-
-        protected override async Task OnInitializedAsync()
-        {
-            appointment = await DatabaseService.GetAppointmentById(ID);
-        }
-        protected bool errorVisible;
-        protected Courses.Models.Database.Appointment appointment;
-
-        protected async Task FormSubmit()
-        {
-            await DatabaseService.UpdateAppointment(ID, appointment);
-            DialogService.Close(appointment);
-        }
-
-        protected async Task CancelButtonClick(MouseEventArgs args)
-        {
-            DialogService.Close(null);
-        }
     }
 }

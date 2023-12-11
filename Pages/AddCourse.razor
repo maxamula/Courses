@@ -35,19 +35,16 @@
                     <RadzenRequiredValidator Component="CourseType" Text="CourseType is required" />
                   </Helper>
             </RadzenFormField>
-            <RadzenFormField Text="Days Of Week" Variant="Variant.Flat">
-                  <ChildContent>
-                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@course.DaysOfWeek" Name="DaysOfWeek" />
-              </ChildContent>
-            </RadzenFormField>
-            <RadzenRow style="margin-bottom: 1rem">
-                <RadzenColumn SizeMD="3">
-                    <RadzenLabel Text="Archived" Component="Archived" style="width: 100%" />
-                </RadzenColumn>
-                <RadzenColumn SizeMD="9">
-                    <RadzenCheckBox @bind-Value="@course.Archived" Name="Archived" />
-                </RadzenColumn>
-            </RadzenRow>
+            <RadzenCheckBoxList @bind-Value="editDays" TValue="int" class="mb-5">
+                <Items>
+                    <RadzenCheckBoxListItem Text="Monday" Value="1" />
+                    <RadzenCheckBoxListItem Text="Tuesday" Value="2" />
+                    <RadzenCheckBoxListItem Text="Wednesday" Value="4" />
+                    <RadzenCheckBoxListItem Text="Thursday" Value="8" />
+                    <RadzenCheckBoxListItem Text="Friday" Value="16" />
+                    <RadzenCheckBoxListItem Text="Saturday" Value="32" />
+                </Items>
+            </RadzenCheckBoxList>
             <RadzenFormField Text="Department" Variant="Variant.Flat">
                   <ChildContent>
                     <RadzenDropDown Data="@departmentsForDepartmentName" TextProperty="DepartmentName" ValueProperty="DepartmentName" AllowClear=true
@@ -57,7 +54,7 @@
             </RadzenFormField>
             <RadzenFormField Text="Teacher" Variant="Variant.Flat">
                   <ChildContent>
-                    <RadzenDropDown Data="@teachersForTeacherID" TextProperty="Phone" ValueProperty="ID" AllowClear=true
+                    <RadzenDropDown Data="@teachersForTeacherID" TextProperty="FullName" ValueProperty="ID" AllowClear=true
                           style="display: block; width: 100%" @bind-Value="@course.TeacherID" Name="TeacherID"
                            />
               </ChildContent>

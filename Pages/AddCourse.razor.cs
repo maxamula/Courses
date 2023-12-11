@@ -40,6 +40,7 @@ namespace Courses.Pages
 
             teachersForTeacherID = await DatabaseService.GetTeachers();
         }
+        protected IEnumerable<int> editDays = new int[] { 2, 8 };
         protected bool errorVisible;
         protected Courses.Models.Database.Course course;
 
@@ -51,6 +52,10 @@ namespace Courses.Pages
         {
             try
             {
+                course.Archived = false;
+                course.DaysOfWeek = 0;
+                foreach (int flag in editDays)
+                    course.DaysOfWeek |= (byte)flag;
                 await DatabaseService.CreateCourse(course);
                 DialogService.Close(course);
             }
