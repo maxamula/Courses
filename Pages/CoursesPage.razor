@@ -1,0 +1,95 @@
+@page "/courses"
+@using Models.Database
+
+<PageTitle>Courses</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Courses" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="100px"  AllowFiltering="false" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="false" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@courses" TItem="Courses.Models.Database.Course" RowSelect="@EditRow" RowExpand="@GetChildData" Style="width: 100%; height: 70vh">
+            <Columns>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="Name" Title="Name">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="Description" Title="Description">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="PaymentPerHour" Title="Payment Per Hour">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="CourseType" Title="Course Type">
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Filterable="false" Sortable="false" Width="70px" MinWidth="200px" Title="Days Of Week" TextAlign="TextAlign.Center">
+                    <Template Context="course">
+                        @{
+                            string days = "";
+                            var flags = (DaysOfWeek)course.DaysOfWeek;
+                            foreach (DaysOfWeek day in Enum.GetValues(typeof(DaysOfWeek)))
+                            {
+                                if (flags.HasFlag(day) && day != 0)
+                                {
+                                    days += day + ", ";
+                                }
+                            }
+                            days = days.TrimEnd(',', ' ');
+                            <p>@days</p>
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="Department.DepartmentName" Title="Department">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Property="Teacher.FullName" Title="Teacher">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Course" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="course">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, course)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+            <Template Context="course">
+                    <RadzenStack Class="rz-my-8">
+                        <RadzenRow Gap="0" AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenText Visible="@(course != null)" Text="Lessons" TextStyle="TextStyle.H4" TagName="TagName.H2" style="margin: 0" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                                    <RadzenButton Visible="@(course != null)" Icon="add_circle_outline" Text="Add" Click=@(args => LessonsAddButtonClick(args,course)) />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenDataGrid ColumnWidth="200px" Visible="@(course != null)" @ref=LessonsDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+                          Data="@course?.Lessons" TItem="Courses.Models.Database.Lesson"  RowSelect="@(args => LessonsRowSelect(args, course))">
+                          <Columns>
+                            <RadzenDataGridColumn TItem="Courses.Models.Database.Lesson" Property="Sequence" Title="Sequence">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="Courses.Models.Database.Lesson" Property="Name" Title="Name">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="Courses.Models.Database.Lesson" Property="Duration" Title="Duration">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="Courses.Models.Database.Lesson" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                                <Template Context="lessonChild">
+                                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat"
+                                        Click=@(args => LessonsDeleteButtonClick(args, lessonChild)) @onclick:stopPropagation="true" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                          </Columns>
+                        </RadzenDataGrid>
+                    </RadzenStack>
+            </Template>
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

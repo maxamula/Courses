@@ -1,0 +1,79 @@
+@page "/teachers"
+@attribute [Authorize(Roles = "Admin")]
+
+
+<PageTitle>Teachers</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Teachers" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTextBox Placeholder="Search ..." style="display: block; width: 100%" @oninput="@Search" />
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@teachers" RowUpdate="@GridRowUpdate" RowCreate="@GridRowCreate" TItem="Courses.Models.Database.Teacher">
+            <Columns>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="ID" Title="I D">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="FullName" Title="Full Name">
+                  <EditTemplate Context="teacher">
+                      <RadzenTextBox style="display: block; width: 100%" @bind-Value="@teacher.FullName" Name="FullName" />
+                      <RadzenRequiredValidator Component="FullName" Text="FullName is required" style="position: absolute;" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="Email" Title="Email">
+                  <EditTemplate Context="teacher">
+                      <RadzenTextBox style="display: block; width: 100%" @bind-Value="@teacher.Email" Name="Email" />
+                      <RadzenRequiredValidator Component="Email" Text="Email is required" style="position: absolute;" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="Phone" Title="Phone">
+                  <EditTemplate Context="teacher">
+                      <RadzenTextBox style="display: block; width: 100%" @bind-Value="@teacher.Phone" Name="Phone" />
+                      <RadzenRequiredValidator Component="Phone" Text="Phone is required" style="position: absolute;" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="Experience" Title="Experience">
+                  <EditTemplate Context="teacher">
+                      <RadzenNumeric style="display: block; width: 100%" @bind-Value="@teacher.Experience" Name="Experience" />
+                      <RadzenRequiredValidator Component="Experience" Text="Experience is required" style="position: absolute;" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Property="Archived" Title="Archived">
+                  <EditTemplate Context="teacher">
+                      <RadzenCheckBox @bind-Value="@teacher.Archived" Name="Archived" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Teacher" Filterable="false" Sortable="false" Width="156px" TextAlign="TextAlign.Center">
+                    <EditTemplate Context="teacher">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            style="margin-top: 0.25rem; margin-right: 0.25rem; margin-bottom: 0.25rem"
+                            Click=@(args => SaveButtonClick(args, teacher)) @onclick:stopPropagation="true" />
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            Click=@(args => CancelButtonClick(args, teacher)) @onclick:stopPropagation="true" />
+                    </EditTemplate>
+                    <Template Context="teacher">
+
+                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            style="margin-top: 0.25rem; margin-right: 0.25rem; margin-bottom: 0.25rem"
+                            Click=@(args => EditButtonClick(args, teacher)) @onclick:stopPropagation="true" />
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, teacher)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

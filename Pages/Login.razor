@@ -1,0 +1,10 @@
+@layout LoginLayout
+@page "/login"
+
+<PageTitle>Login</PageTitle>
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenText Text="Login" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    </RadzenColumn>
+    <RadzenLogin Style="width: 100%" AllowResetPassword="false" Login="@Submit" AllowRememberMe="false" Register="@Register"></RadzenLogin>
+</RadzenRow>

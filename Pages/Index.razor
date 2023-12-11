@@ -1,0 +1,9 @@
+@page "/"
+@attribute [Authorize(Roles="Student,Admin")]
+<PageTitle>Index</PageTitle>
+<AuthorizeView Roles="Student">
+    <Dashboard/>
+</AuthorizeView>
+<AuthorizeView Roles="Admin">
+    <AdminDashboard/>
+</AuthorizeView>

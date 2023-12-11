@@ -1,0 +1,27 @@
+﻿@page "/about/{CourseId}"
+@using Courses.Models.Database
+
+@{
+    if(Course != null)
+    {
+        <h1>@Course.Name</h1>
+        <h3>@Course.Description</h3>
+        <img style="width: 500px; height: 300px; " src="data:image/png;base64,@Convert.ToBase64String(Course.Picture)" alt="rocket">
+        string days = "";
+        var flags = (DaysOfWeek)Course.DaysOfWeek;
+        foreach (DaysOfWeek day in Enum.GetValues(typeof(DaysOfWeek)))
+        {
+            if (flags.HasFlag(day) && day != 0)
+            {
+                days += day + ", ";
+            }
+        }
+        days = days.TrimEnd(',', ' ');
+        <h4>@days</h4>
+        <RadzenButton title="Enroll">Enroll</RadzenButton>
+    }
+    else
+    {
+        <h1>Couse not found!</h1>
+    }
+}

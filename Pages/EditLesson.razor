@@ -1,0 +1,38 @@
+@page "/edit-lesson"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Edit Lesson</PageTitle>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Lesson</RadzenAlert>
+        <RadzenTemplateForm TItem="Courses.Models.Database.Lesson" Data="@lesson" Visible="@(lesson != null)" Submit="@FormSubmit">
+          <RadzenStack>
+            <RadzenFormField Text="Name" Variant="Variant.Flat">
+                  <ChildContent>
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@lesson.Name" Name="Name" />
+                  </ChildContent>    
+                  <Helper>
+                    <RadzenRequiredValidator Component="Name" Text="Name is required" />
+                  </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Duration" Variant="Variant.Flat">
+                  <ChildContent>
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@lesson.Duration" Name="Duration" />
+              </ChildContent>
+            </RadzenFormField>
+            <RadzenFormField Text="Sequence" Variant="Variant.Flat">
+                  <ChildContent>
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@lesson.Sequence" Name="Sequence" />
+                  </ChildContent>    
+                  <Helper>
+                    <RadzenRequiredValidator Component="Sequence" Text="Sequence is required" />
+                  </Helper>
+            </RadzenFormField>
+          </RadzenStack>
+          <RadzenStack style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

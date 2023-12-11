@@ -1,0 +1,151 @@
+@using Models.Database
+@using System.Globalization
+
+<link rel="stylesheet" href="vendors/feather/feather.css">
+<link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+<link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+<!-- endinject -->
+<!-- Plugin css for this page -->
+<link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+<link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+<link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
+<!-- End plugin css for this page -->
+<!-- inject:css -->
+<link rel="stylesheet" href="css/vertical-layout-light/style.css">
+
+<RadzenStack>
+        <div class="row">
+            <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                <h3 class="font-weight-bold">Welcome Admin</h3>
+                <h6 class="font-weight-normal mb-0">All systems are running smoothly!<br><span class="text-primary"></span></h6>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card tale-bg">
+                <div class="card-people mt-auto">
+                    <img src="images/dashboard/people.svg" alt="people">
+                    <div class="weather-info">
+                        <div class="d-flex">
+                        @{
+                            var now = DateTime.Now;
+                            <div>
+                                <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>@now.ToString("HH:mm")</h2>
+                            </div>
+                            <div class="ml-2">
+                                <h4 class="location font-weight-normal">@now.ToString("dd")</h4>
+                                <h6 class="font-weight-normal">@now.ToString("MMMM", CultureInfo.InvariantCulture)</h6>
+                            </div>
+                        } 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin transparent">
+            <div class="row">
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                    <div class="card card-tale">
+                        <div class="card-body">
+                            <p class="mb-4">Total Courses</p>
+                            <p class="fs-30 mb-2">@DatabaseContext.Courses.Where(x => !x.Archived).Count()</p>
+                            <p>Number of active courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                    <div class="card card-dark-blue">
+                        <div class="card-body">
+                            <p class="mb-4">Enrolled Students</p>
+                            <p class="fs-30 mb-2">@DatabaseContext.Students.Count()</p>
+                            <p>Number of students currently enrolled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+                    <div class="card card-light-blue">
+                        <div class="card-body">
+                            <p class="mb-4">Number of Lessons</p>
+                            <p class="fs-30 mb-2">@DatabaseContext.Lessons.Where(x => !x.Course.Archived).Count()</p>
+                            <p>Total lessons across all courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 stretch-card transparent">
+                    <div class="card card-light-danger">
+                        <div class="card-body">
+                            <p class="mb-4">Total Teachers</p>
+                            <p class="fs-30 mb-2">@DatabaseContext.Teachers.Where(x => !x.Archived).Count()</p>
+                            <p>Number of teachers conducting the courses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Order Details</p>
+                    <p class="font-weight-500">The total number of sessions within the date range. It is the period time a user is actively engaged with your website, page or app, etc</p>
+                    <div class="d-flex flex-wrap mb-5">
+                        <div class="mr-5 mt-3">
+                            <p class="text-muted">Order value</p>
+                            <h3 class="text-primary fs-30 font-weight-medium">12.3k</h3>
+                        </div>
+                        <div class="mr-5 mt-3">
+                            <p class="text-muted">Orders</p>
+                            <h3 class="text-primary fs-30 font-weight-medium">14k</h3>
+                        </div>
+                        <div class="mr-5 mt-3">
+                            <p class="text-muted">Users</p>
+                            <h3 class="text-primary fs-30 font-weight-medium">71.56%</h3>
+                        </div>
+                        <div class="mt-3">
+                            <p class="text-muted">Downloads</p>
+                            <h3 class="text-primary fs-30 font-weight-medium">34040</h3>
+                        </div>
+                    </div>
+                    <div class="card data-icon-card-primary">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8 text-white">
+                                    <p class="card-title text-white">Enrollment Progress</p>
+                                    <h3>@(Math.Round(((double)DatabaseContext.Students.Where(x => x.Studentsgroups.Count() != 0).Count() / (double)DatabaseContext.Students.Count())*100, 2))%</h3>
+                                    <p class="text-white font-weight-500 mb-0">The total number of sessions within the date range.It is calculated as the sum . </p>
+                                </div>
+                                <div class="col-3 background-icon">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <p class="card-title">Sales Report</p>
+                        <a href="#" class="text-info">View all</a>
+                    </div>
+                    <p class="font-weight-500">The total number of sessions within the date range. It is the period time a user is actively engaged with your website, page or app, etc</p>
+                    <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
+                    <RadzenChart>
+                        <RadzenPieSeries Data="@typeDistr" Title="Lessons types" CategoryProperty="Type" ValueProperty="Count">
+                            <RadzenSeriesDataLabels Visible="true" />
+                        </RadzenPieSeries>
+                    </RadzenChart>
+                </div>
+            </div>
+        </div>
+    </div>
+</RadzenStack>
+<footer class="footer">
+    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023.</span>
+    </div>
+</footer>

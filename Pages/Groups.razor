@@ -1,0 +1,69 @@
+@page "/groups"
+@using Models.Database
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Groups</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Groups" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTextBox Placeholder="Search ..." style="display: block; width: 100%" @oninput="@Search" />
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@groups" RowUpdate="@GridRowUpdate" RowCreate="@GridRowCreate" TItem="Courses.Models.Database.Group">
+            <Columns>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Group" Property="Name" Title="Name">
+                  <EditTemplate Context="_group">
+                      <RadzenTextBox style="display: block; width: 100%" @bind-Value="@_group.Name" Name="Name" />
+                      <RadzenRequiredValidator Component="Name" Text="Name is required" style="position: absolute;" />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Group" Property="Course.Name" Title="Course">
+                  <EditTemplate Context="_group">
+                        <RadzenDropDown Data="@coursesForCourseID" TextProperty="Name" ValueProperty="ID"
+                            Placeholder="Choose Course" style="display: block; width: 100%" @bind-Value="@_group.CourseID" Name="CourseID" AllowClear=true
+                           />
+                  </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Courses.Models.Database.Group" Filterable="false" Sortable="false" Width="156px" TextAlign="TextAlign.Center">
+                    <EditTemplate Context="_group">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            style="margin-top: 0.25rem; margin-right: 0.25rem; margin-bottom: 0.25rem"
+                            Click=@(args => SaveButtonClick(args, _group)) @onclick:stopPropagation="true" />
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            Click=@(args => CancelButtonClick(args, _group)) @onclick:stopPropagation="true" />
+
+                            <RadzenButton Icon="event" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                          Click=@(args => ArrangeButtonClick(args, _group)) @onclick:stopPropagation="true" />
+                            
+                    </EditTemplate>
+                    <Template Context="_group">
+
+                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                            style="margin-top: 0.25rem; margin-right: 0.25rem; margin-bottom: 0.25rem"
+                            Click=@(args => EditButtonClick(args, _group)) @onclick:stopPropagation="true" />
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, _group)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+    <RadzenScheduler TItem="Appointment" TextProperty="GroupName" StartProperty="LessonStart"  EndProperty="LessonEnd" Data="@appointments" Style="height: 50vh">
+        <RadzenDayView></RadzenDayView>
+        <RadzenWeekView></RadzenWeekView>
+    </RadzenScheduler>
+</RadzenStack>
