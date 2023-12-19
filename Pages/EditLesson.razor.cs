@@ -59,7 +59,6 @@ namespace Courses.Pages
                 try
                 {
                     Context.Database.ExecuteSqlRaw("SELECT * FROM lessons FOR UPDATE;");
-                    transaction.CreateSavepoint("lesson_savepoint");
 
                     int maxSeq = 0;
                     foreach (var lesson in Context.Lessons.Where(x => x.CourseID == lesson.CourseID))
@@ -70,7 +69,7 @@ namespace Courses.Pages
 
                     if (lesson.Sequence > maxSeq || lesson.Sequence < 0)
                     {
-                        transaction.RollbackToSavepoint("lesson_savepoint");
+                        transaction.Rollback();
                         DialogService.Close(lesson);
                         return;
                     }
@@ -101,7 +100,7 @@ namespace Courses.Pages
                     {
                         lesson.Sequence += shift;
                     }
-
+                    DatabaseService.UpdateLesson(lesson.ID, lesson);
                     Context.SaveChanges();
                     transaction.Commit();
                 }

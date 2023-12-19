@@ -89,7 +89,7 @@ namespace Courses.Pages
             Random random = new Random((int)DateTime.Now.Ticks);
 
             CourseOfTheDay = DatabaseContext.Courses.Where(x => !x.Archived)
-                .Skip(random.Next(0, DatabaseContext.Courses.Count() - 1))
+                .Skip(random.Next(0, DatabaseContext.Courses.Where(x => !x.Archived).Count() - 1))
                 .FirstOrDefault();
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)
